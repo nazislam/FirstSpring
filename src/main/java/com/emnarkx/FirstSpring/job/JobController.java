@@ -1,11 +1,13 @@
 package com.emnarkx.FirstSpring.job;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/jobs")
 public class JobController {
 
     private JobService jobService;
@@ -14,23 +16,42 @@ public class JobController {
         this.jobService = jobService;
     }
 
-    @GetMapping("/jobs")
-    public List<Job> findAll() {
-        return jobService.findAll();
+    @GetMapping
+    public ResponseEntity<List<Job>> findAll() {
+        return ResponseEntity.ok(jobService.findAll());
     }
 
-    @PostMapping("/jobs")
-    public String createJob(@RequestBody Job job) {
+    @PostMapping
+    public ResponseEntity<String> createJob(@RequestBody Job job) {
         jobService.createJob(job);
-        return "Job added successfully";
+        return new ResponseEntity<>("Job added successfully", HttpStatus.CREATED);
     }
 
-    @GetMapping("jobs/{id}")
-    public Job getJobById(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Job> getJobById(@PathVariable Long id) {
         Job job = jobService.getJobById(id);
         if (job != null) {
-            return job;
+            return new ResponseEntity<>(job, HttpStatus.OK);
         }
-        return new Job(1L, "TestJob", "TestJob", "2000", "2000", "loc");
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteJobById(@PathVariable Long id) {
+        boolean deleted = jobService.deleteJobById(id);
+        if (deleted) {
+            return new ResponseEntity<>("Job deleted successfully", HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateJobById(@PathVariable Long id, @RequestBody Job updatedJob) {
+        boolean updated = jobService.updateJobById(id, updatedJob);
+        if (updated) {
+            return ResponseEntity.ok("Job updated successfully");
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
 }
