@@ -1,9 +1,9 @@
 package com.emnarkx.FirstSpring.job;
 
+import com.emnarkx.FirstSpring.company.Company;
 import jakarta.persistence.*;
 
 @Entity
-//@Table(name = "job_title")
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,7 +14,18 @@ public class Job {
     private String maxSalary;
     private String location;
 
+    @ManyToOne
+    private Company company;
+
     public Job() {
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     public Job(Long id, String title, String description, String minSalary, String maxSalary, String location) {
